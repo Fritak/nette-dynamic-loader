@@ -3,7 +3,7 @@ This is a dummy dynamic loader for nette.
 
 ##Getting started
 
-0. Download all plugins via bower, install in PATH: PLUGIN_NAME/css and PLUGIN_NAME/js (Unfortunately, there is currently no other path possible)
+1. Download all plugins via bower, install in PATH: PLUGIN_NAME/css and PLUGIN_NAME/js (Unfortunately, there is currently no other path possible)
 You can do it nicely with Bower installer (bower.json):
 ``` json
   "dependencies": {
@@ -26,13 +26,13 @@ You can do it nicely with Bower installer (bower.json):
     }
 ```
 
-1. Prefered install method is via composer 
+2. Prefered install method is via composer 
 
 ``` sh
 composer require fritak/nette-dynamic-loader
 ```
 
-2. Register at config.neon with parameters
+3. Register at config.neon with parameters
 ``` php
 parameters:
     loader:
@@ -42,7 +42,7 @@ services:
 	- DynamicLoader\Loader(%loader%)
 ``` 
 
-3. Create component (eg. in BasePresenter)
+4. Create component (eg. in BasePresenter)
 ``` php
     use DynamicLoader\Loader;
 
@@ -61,12 +61,12 @@ services:
     }
 ```
 
-4. Add control to a template (eg. @layout)
+5. Add control to a template (eg. @layout)
 ``` php
 {control dynamicLoader}
 ```
 
-And that's it! You can control it with following config:
+6. And that's it! You can control it with following config:
 
 ``` php
 parameters:
@@ -83,14 +83,14 @@ parameters:
         positionsBott:
             - 'bootstrap.min.js'
 ``` 
-You can set default plugins global
+7. You can set default plugins global
 ``` php
         defaultPlugins:                                 
             - 'jquery'
             - 'jquery-ui'
             - 'bootstrap'
 ``` 
-Or in groups. But then you have to set GROUP to a component.
+8. Or in groups. But then you have to set GROUP to a component.
 ``` php
         defaultPlugins:                                 
             front:
@@ -101,7 +101,7 @@ Or in groups. But then you have to set GROUP to a component.
                 - 'bootstrap'
 ``` 
 
-If you set defaultPlugins, others won't be loaded. So you have to set them manually in presenters (eg. in HomepagePresenter):
+9. If you set defaultPlugins, others won't be loaded. So you have to set them manually in presenters (eg. in HomepagePresenter):
 ``` php
     public function __construct() 
     {
@@ -110,7 +110,7 @@ If you set defaultPlugins, others won't be loaded. So you have to set them manua
     }
 ``` 
 
-And edit basePresenter:
+10. And edit basePresenter:
 ``` php
     public $enablePlugins = [];
 

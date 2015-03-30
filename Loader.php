@@ -79,7 +79,8 @@ Class Loader extends Control
         {
             $pluginsToPage = $this->enabledPlugins;
         }
-        
+
+        $pluginsToPage = array_merge($this->addedPlugins, $pluginsToPage);
         foreach($this->plugins AS $plugin)
         {
             if(in_array($plugin->name, $pluginsToPage))
