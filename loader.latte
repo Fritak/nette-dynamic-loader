@@ -1,0 +1,13 @@
+{foreach $plugins AS $plugin}
+    {foreach $plugin->files AS $file}
+        {if $file->position == $position}
+            
+        <!--- Loading {$plugin->name|noescape} --->
+        {if $file->type == 'css'}
+        <link rel="stylesheet" href="{$basePath}/plugins/{$plugin->name}/css/{$file->name}">
+        {else}
+        <script src="{$basePath}/plugins/{$plugin->name}/js/{$file->name}"></script>
+        {/if}
+        {/if}
+    {/foreach}
+{/foreach}

@@ -1,0 +1,19 @@
+{
+    "name": "fritak/nette-dynamic-loader",
+    "type": "library",
+    "description": "Dynamic loader for nette, using bower.",
+    "keywords": ["loader","bower"],
+    "homepage": "https://github.com/Fritak/nette-dynamic-loader",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marek Sušický",
+            "email": "php@fritak.eu",
+            "homepage": "http://fritak.eu",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
