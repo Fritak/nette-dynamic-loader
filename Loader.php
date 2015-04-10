@@ -2,6 +2,7 @@
 namespace DynamicLoader;
 
 use Nette\Application\UI\Control;
+use Nette\Caching\Cache;
 
 /**
  * @property-read array $plugins Plugins
@@ -12,6 +13,7 @@ Class Loader extends Control
 {
     const POSITION_HEAD         = 'head';
     const POSITION_BOTT         = 'botttom';
+    const CACHE_KEY             = 'fritak/dynamicLoader';
     
     public $defaultCSS          = self::POSITION_HEAD;
     public $defaultJS           = self::POSITION_HEAD;
@@ -28,20 +30,37 @@ Class Loader extends Control
     private $bowerJson  = '';
     private $basePath   = '';
     private $plugins    = [];
+    private $count      = 0;
     
-    public function __construct($config) 
+    public function __construct($config, $cacheStorage) 
     {
         $this->loadConfig($config);
         
+        $cache = new Cache($cacheStorage);
+
+        $encoded = $cache->load(self::CACHE_KEY, function()
+        {
+            $encode = [];
+            $json = json_decode(file_get_contents($this->bowerJson));
+            foreach($json->dependencies AS $plugin => $version)
+            {
+                $plugin = new Plugin($plugin, $this, $version); 
+                $encode[] = $plugin->encode();
+            }
+            $encoded = json_encode($encode);
+            return $encoded;
+        });
+
+        $decoded = json_decode($encoded);
+        foreach($decoded AS $plugin)
+        {
+            $this->count++;
+            $this->plugins[] = Plugin::decode($plugin, $this);
+        }
+
         if(empty($config['disableBar']))
         {
             $this->initDebugBar();
-        }
-        
-        $json = json_decode(file_get_contents($this->bowerJson));
-        foreach($json->dependencies AS $plugin => $version)
-        {
-            $this->plugins[] = new Plugin($plugin, $version, $this); 
         }
     }
     
@@ -175,7 +194,7 @@ Class Loader extends Control
         if (!$this->isDebugBar)
         {
             $this->isDebugBar = TRUE;
-            \Tracy\Debugger::getBar()->addPanel(new DynamicLoaderBar);
+            \Tracy\Debugger::getBar()->addPanel(new DynamicLoaderBar($this->count));
         }
     }
 }

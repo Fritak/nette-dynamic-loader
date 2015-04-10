@@ -45,4 +45,9 @@ Class File extends \Nette\Object
             $this->position = Loader::POSITION_BOTT;
         }
     }
+    
+    public function toArray() 
+    {
+        return ['name' => $this->name, 'path' => $this->path, 'type' => $this->type];
+    }
 }

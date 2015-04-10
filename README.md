@@ -32,14 +32,14 @@ You can do it nicely with Bower installer (bower.json):
 composer require fritak/nette-dynamic-loader
 ```
 
-3. Register at config.neon with parameters
+3. Register at config.neon with parameters a for caching
 ``` php
 parameters:
     loader:
         bowerJson:  '/var/www/bower.json' # Path to your bower file
         pluginPath: '/var/www/plugins/'   # Path to installed plugins (see item 0)
 services:
-	- DynamicLoader\Loader(%loader%)
+	- DynamicLoader\Loader(%loader%, @cacheStorage)
 ``` 
 
 4. Create component (eg. in BasePresenter)
