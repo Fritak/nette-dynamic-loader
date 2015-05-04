@@ -14,7 +14,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "searchturbine/phpwee-php-minifier": "dev-master as 1.2"
     },
     "autoload": {
             "classmap": ["/"]

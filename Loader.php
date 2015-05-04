@@ -3,6 +3,7 @@ namespace DynamicLoader;
 
 use Nette\Application\UI\Control;
 use Nette\Caching\Cache;
+use PHPWee\Minify;
 
 /**
  * @property-read array $plugins Plugins
@@ -14,6 +15,8 @@ Class Loader extends Control
     const POSITION_HEAD         = 'head';
     const POSITION_BOTT         = 'botttom';
     const CACHE_KEY             = 'fritak/dynamicLoader';
+    const MINIFY_KEY_JS         = 'fritak/dynamicLoader-js';
+    const MINIFY_KEY_CSS        = 'fritak/dynamicLoader-css';
     
     public $defaultCSS          = self::POSITION_HEAD;
     public $defaultJS           = self::POSITION_HEAD;
@@ -24,6 +27,7 @@ Class Loader extends Control
     public $addedPlugins        = [];
     public $pluginPath          = '';
     public $group               = '';
+    public $minify              = FALSE;
     
     private $isDebugBar = FALSE;
     private $renderAll  = FALSE;
@@ -31,10 +35,12 @@ Class Loader extends Control
     private $basePath   = '';
     private $plugins    = [];
     private $count      = 0;
+    private $cacheStorage;
     
     public function __construct($config, $cacheStorage) 
     {
         $this->loadConfig($config);
+        $this->cacheStorage = $cacheStorage;
         
         $cache = new Cache($cacheStorage);
 
@@ -118,6 +124,7 @@ Class Loader extends Control
         $template->plugins   = $this->pluginsEnabled;
         $template->position  = $this->renderPosition;
         $template->group     = $this->group;
+        $template->minify    = $this->minify;
         
         if(!empty($this->basePath))
         {
@@ -128,6 +135,12 @@ Class Loader extends Control
         {
             DynamicLoaderBar::addPlugins($this->pluginsEnabled);
         }
+        
+        if($this->minify)
+        {
+            $this->minifyPlugins();
+        }
+        
         $template->render();
     }
     
@@ -184,6 +197,50 @@ Class Loader extends Control
         {
             throw new DynamicLoaderException('Key "pluginPath" is mandatory. Please add plugin path to your config.');
         }
+        
+        $this->minify = isset($config['minify'])? $config['minify'] : FALSE;
+    }
+    
+    public function minifyPlugins()
+    {
+        $cache = new Cache($this->cacheStorage);
+        
+        $css = $cache->load(self::MINIFY_KEY_CSS);
+        $js  = $cache->load(self::MINIFY_KEY_JS);
+        
+        if(is_null($css))
+        {
+            foreach($this->pluginsEnabled AS $plugin)
+            { 
+                foreach($plugin->files AS $file)
+                {
+                    if($file->type == 'js')
+                    {
+                        $js .= ' ' . \PHPWee\Minify::js(file_get_contents($file->path . $file->name));
+                        
+                    }
+                    else 
+                    { 
+                        //$css .= ' ' . \PHPWee\Minify::css(file_get_contents($file->path . $file->name)); -bug Minify-
+                        $css .= ' ' . file_get_contents($file->path . $file->name); 
+                        
+                    }
+                }
+            }
+            $cssFile = fopen($this->pluginPath . '/minify.css', 'w+');
+            $jsFile  = fopen($this->pluginPath . '/minify.js',  'w+');
+
+            fwrite($jsFile, $js);
+            fwrite($cssFile, $css);
+
+            fclose($cssFile);
+            fclose($jsFile);
+            
+            $cache->save(self::MINIFY_KEY_CSS, $css);
+            $cache->save(self::MINIFY_KEY_JS,  $js);
+        }
+        
+        return TRUE;
     }
     
     /**

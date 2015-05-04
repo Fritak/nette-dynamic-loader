@@ -1,3 +1,7 @@
+{if $minify}
+    <link rel="stylesheet" href="{$basePath}/plugins/minify.css">
+    <script src="{$basePath}/plugins/minify.js"></script>
+{else}
 {foreach $plugins AS $plugin}
     {foreach $plugin->files AS $file}
         {if $file->position == $position}
@@ -11,3 +15,4 @@
     {/foreach}
     
 {/foreach}
+{/if}
