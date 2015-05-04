@@ -3,7 +3,6 @@ namespace DynamicLoader;
 
 use Nette\Application\UI\Control;
 use Nette\Caching\Cache;
-use PHPWee\Minify;
 
 /**
  * @property-read array $plugins Plugins
@@ -216,7 +215,8 @@ Class Loader extends Control
                 {
                     if($file->type == 'js')
                     {
-                        $js .= ' ' . \PHPWee\Minify::js(file_get_contents($file->path . $file->name));
+                        //$js .= ' ' . \PHPWee\Minify::js(file_get_contents($file->path . $file->name)); -bug Minify-
+                        $js .= ' ' . file_get_contents($file->path . $file->name); 
                         
                     }
                     else 
